@@ -31,9 +31,9 @@ module URI
         wrap :query, value
       end
 
-      def path(value)
+      def path(*segments)
         # Make sure there's a leading / if a non leading / is given.
-        wrap :path, ::File.join("/", value)
+        wrap :path, ::File.join(*segments.compact.map(&:to_s).prepend("/"))
       end
 
       def to_s
