@@ -14,7 +14,7 @@ module URI
         @uri = uri.clone
       end
 
-      [:host, :scheme, :path, :query, :fragment, :port].each do |property|
+      [:host, :scheme, :query, :fragment, :port].each do |property|
         define_method property do |value|
           wrap property, value
         end
@@ -29,6 +29,11 @@ module URI
         end
 
         wrap :query, value
+      end
+
+      def path(value)
+        # Make sure there's a leading / if a non leading / is given.
+        wrap :path, ::File.join("/", value)
       end
 
       def to_s

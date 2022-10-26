@@ -1,17 +1,12 @@
 PATH
   remote: .
   specs:
-    uri-builder (0.1.0)
+    uri-builder (0.1.1)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    coderay (1.1.3)
     diff-lcs (1.5.0)
-    method_source (1.0.0)
-    pry (0.14.1)
-      coderay (~> 1.1)
-      method_source (~> 1.0)
     rake (13.0.6)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
@@ -28,10 +23,10 @@ GEM
     rspec-support (3.10.3)
 
 PLATFORMS
+  arm64-darwin-21
   x86_64-darwin-20
 
 DEPENDENCIES
-  pry
   rake (~> 13.0)
   rspec (~> 3.0)
   uri-builder!

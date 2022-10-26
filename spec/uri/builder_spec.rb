@@ -17,9 +17,18 @@ RSpec.describe URI::Builder::DSL do
   end
 
   describe "#path" do
-    before { dsl.path("/fizz/buzz") }
+    let(:path) { "/fizz/buzz" }
+    before { dsl.path(path) }
     subject { uri.path }
     it { is_expected.to eql "/fizz/buzz" }
+    context "without leading /" do
+      let(:path) { "fizz/buzz" }
+      it { is_expected.to eql "/fizz/buzz" }
+    end
+    context "blank" do
+      let(:path) { "" }
+      it { is_expected.to eql "/" }
+    end
   end
 
   describe "#query" do
