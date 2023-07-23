@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uri-builder (0.1.2)
+    uri-builder (0.1.3)
 
 GEM
   remote: https://rubygems.org/
