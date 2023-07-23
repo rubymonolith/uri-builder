@@ -21,9 +21,19 @@ module URI
       end
 
       def scheme(value)
-        target_scheme = URI.scheme_list[value.upcase]
-        args = Hash[target_scheme.component.map { |attr| [ attr, @uri.send(attr) ] }]
-        @uri = target_scheme.build(**args)
+        if @uri.scheme
+          # Handles URLs without schemes, like https://example.com/foo
+          target_scheme = URI.scheme_list[value.upcase]
+          args = Hash[target_scheme.component.map { |attr| [ attr, @uri.send(attr) ] }]
+          @uri = target_scheme.build(**args)
+        else
+          # Handles URLs without schemes, like example.com/foo
+          uri = URI.parse("#{value}://#{@uri.path}")
+          (uri.component - %i[host path scheme]).each do |component|
+            uri.send "#{component}=", @uri.send(component)
+          end
+          @uri = uri
+        end
       end
 
       def query(value)
