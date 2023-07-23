@@ -14,10 +14,16 @@ module URI
         @uri = uri.clone
       end
 
-      [:host, :scheme, :query, :fragment, :port].each do |property|
+      [:host, :query, :fragment, :port].each do |property|
         define_method property do |value|
           wrap property, value
         end
+      end
+
+      def scheme(value)
+        target_scheme = URI.scheme_list[value.upcase]
+        args = Hash[target_scheme.component.map { |attr| [ attr, @uri.send(attr) ] }]
+        @uri = target_scheme.build(**args)
       end
 
       def query(value)

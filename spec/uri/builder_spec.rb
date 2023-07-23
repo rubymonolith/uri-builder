@@ -11,9 +11,15 @@ RSpec.describe URI::Builder::DSL do
   end
 
   describe "#scheme" do
-    before { dsl.scheme("http") }
-    subject { uri.scheme }
-    it { is_expected.to eql "http" }
+    before { dsl.scheme("https") }
+    describe "value" do
+      subject { uri.scheme }
+      it { is_expected.to eql "https" }
+    end
+    describe "class" do
+      subject { uri.class }
+      it { is_expected.to eql URI::HTTPS }
+    end
   end
 
   describe "#path" do
