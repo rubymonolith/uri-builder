@@ -34,6 +34,7 @@ module URI
           end
           @uri = uri
         end
+        self
       end
 
       def query(value)
