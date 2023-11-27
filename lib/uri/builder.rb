@@ -70,7 +70,13 @@ module URI
   end
 
   def self.build(value)
-    URI(value).build
+    if block_given?
+      URI(value).build.tap do |uri|
+        yield uri
+      end.uri
+    else
+      URI(value).build
+    end
   end
 
   def self.env(key, default = nil)

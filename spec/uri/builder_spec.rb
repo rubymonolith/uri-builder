@@ -4,6 +4,31 @@ RSpec.describe URI::Builder::DSL do
   let(:builder) { URI.build("https://example.com/foo/bar?fizz=buzz#super") }
   let(:uri) { builder.uri }
 
+  describe ".build" do
+    context "block given" do
+      subject do
+        URI.build("example.com") do |u|
+          u.scheme "https"
+          u.path "/about"
+        end
+      end
+      it "returns URI" do
+        expect(subject).to be_a URI
+      end
+      it "modifies URI" do
+        expect(subject.to_s).to eql "https://example.com/about"
+      end
+    end
+    context "no block given" do
+      subject do
+        URI.build("example.com")
+      end
+      it "returns URI::Builder" do
+        expect(subject).to be_a URI::Builder::DSL
+      end
+    end
+  end
+
   describe "#host" do
     before { builder.host("www.example.com") }
     subject { uri.host }
