@@ -6,6 +6,12 @@ URI builder makes working with URLs in Ruby a little less awkward by chaining me
 URI.build("https://www.example.com/api/v1").path("/api/v2").query(search: "great books").uri
 ```
 
+Or if you prefer a block format that automatically converts back to an URI object after the transformation.
+
+```ruby
+URI.build("https://www.example.com/api/v1") { _1.path("/api/v2").query search: "great books" }
+```
+
 Compare that to:
 
 ```ruby
