@@ -57,6 +57,10 @@ module URI
         uri.to_s
       end
 
+      def to_str
+        uri.to_str
+      end
+
       private
         def wrap(property, value)
           @uri.send "#{property}=", value

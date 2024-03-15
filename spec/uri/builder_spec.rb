@@ -96,4 +96,9 @@ RSpec.describe URI::Builder::DSL do
     subject { uri.port }
     it { is_expected.to eql 9000 }
   end
+
+  describe "#to_str" do
+    subject { uri.to_str }
+    it { is_expected.to eql "https://example.com/foo/bar?fizz=buzz#super" }
+  end
 end
