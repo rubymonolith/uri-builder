@@ -7,6 +7,7 @@ Gem::Specification.new do |spec|
   spec.version = URI::Build::VERSION
   spec.authors = ["Brad Gessler"]
   spec.email = ["bradgessler@gmail.com"]
+  spec.licenses = ["MIT"]
 
   spec.summary = "Build URIs via chains"
   spec.description = spec.summary
