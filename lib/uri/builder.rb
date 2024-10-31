@@ -39,8 +39,8 @@ module URI
 
       def query(value)
         value = case value
-        when Hash
-          URI.encode_www_form value
+        when Hash, Array
+          build_query value
         else
           value
         end
@@ -65,6 +65,23 @@ module URI
         def wrap(property, value)
           @uri.send "#{property}=", value
           self
+        end
+
+        def build_query(params, prefix = nil)
+          case params
+          when Hash
+            params.map { |key, value|
+              new_prefix = prefix ? "#{prefix}[#{key}]" : key.to_s
+              build_query(value, new_prefix)
+            }.reject(&:empty?).join('&')
+          when Array
+            params.map.with_index { |value, _index|
+              new_prefix = "#{prefix}[]"
+              build_query(value, new_prefix)
+            }.reject(&:empty?).join('&')
+          else
+            "#{prefix}=#{URI.encode_www_form_component(params.to_s)}"
+          end
         end
     end
   end

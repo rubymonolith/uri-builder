@@ -83,6 +83,21 @@ RSpec.describe URI::Builder::DSL do
     before { builder.query(foo: "bar") }
     subject { uri.query }
     it { is_expected.to eql "foo=bar" }
+
+    describe "nested hashes and arrays" do
+      before {
+        builder.query(
+          foo: {
+            bar: [
+              {fizz: "buzz"},
+              %w[a b c],
+              "fun"
+            ],
+          }
+        )
+      }
+      it { is_expected.to eql "foo[bar][][fizz]=buzz&foo[bar][][]=a&foo[bar][][]=b&foo[bar][][]=c&foo[bar][]=fun" }
+    end
   end
 
   describe "#fragment" do
