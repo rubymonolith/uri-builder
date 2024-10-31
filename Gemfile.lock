@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uri-builder (0.1.8)
+    uri-builder (0.1.9)
 
 GEM
   remote: https://rubygems.org/
@@ -26,6 +26,7 @@ PLATFORMS
   arm64-darwin-21
   arm64-darwin-22
   arm64-darwin-23
+  arm64-darwin-24
   x86_64-darwin-20
 
 DEPENDENCIES
