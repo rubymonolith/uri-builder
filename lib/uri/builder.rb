@@ -53,6 +53,10 @@ module URI
         wrap :path, ::File.join(*segments.compact.map(&:to_s).prepend("/"))
       end
 
+      def trailing_slash
+        wrap :path, @uri.path + "/" unless @uri.path.end_with?("/")
+      end
+
       def to_s
         uri.to_s
       end

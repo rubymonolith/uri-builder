@@ -79,6 +79,23 @@ RSpec.describe URI::Builder::DSL do
     end
   end
 
+  describe "#trailing_slash" do
+    before { builder.path(*path).trailing_slash }
+    subject { uri.path }
+    context "/fizz/buzz" do
+      let(:path) { "/fizz/buzz" }
+      it { is_expected.to eql "/fizz/buzz/" }
+    end
+    context "/fizz/buzz/" do
+      let(:path) { "/fizz/buzz/" }
+      it { is_expected.to eql "/fizz/buzz/" }
+    end
+    context "/" do
+      let(:path) { "/" }
+      it { is_expected.to eql "/" }
+    end
+  end
+
   describe "#query" do
     before { builder.query(foo: "bar") }
     subject { uri.query }
