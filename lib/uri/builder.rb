@@ -57,6 +57,10 @@ module URI
         wrap :path, @uri.path + "/" unless @uri.path.end_with?("/")
       end
 
+      def remove_trailing_slash
+        wrap :path, @uri.path.chomp("/") if @uri.path.end_with?("/") and @uri.path != "/"
+      end
+
       def to_s
         uri.to_s
       end

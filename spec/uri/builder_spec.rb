@@ -61,6 +61,10 @@ RSpec.describe URI::Builder::DSL do
       let(:path) { "fizz/buzz" }
       it { is_expected.to eql "/fizz/buzz" }
     end
+    context "with trailing /" do
+      let(:path) { "fizz/buzz/" }
+      it { is_expected.to eql "/fizz/buzz/" }
+    end
     context "blank" do
       let(:path) { "" }
       it { is_expected.to eql "/" }
@@ -89,6 +93,23 @@ RSpec.describe URI::Builder::DSL do
     context "/fizz/buzz/" do
       let(:path) { "/fizz/buzz/" }
       it { is_expected.to eql "/fizz/buzz/" }
+    end
+    context "/" do
+      let(:path) { "/" }
+      it { is_expected.to eql "/" }
+    end
+  end
+
+  describe "#remove_trailing_slash" do
+    before { builder.path(*path).remove_trailing_slash }
+    subject { uri.path }
+    context "/fizz/buzz" do
+      let(:path) { "/fizz/buzz" }
+      it { is_expected.to eql "/fizz/buzz" }
+    end
+    context "/fizz/buzz/" do
+      let(:path) { "/fizz/buzz/" }
+      it { is_expected.to eql "/fizz/buzz" }
     end
     context "/" do
       let(:path) { "/" }
