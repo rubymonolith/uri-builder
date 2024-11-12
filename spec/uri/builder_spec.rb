@@ -83,6 +83,12 @@ RSpec.describe URI::Builder::DSL do
     end
   end
 
+  describe "#clear_path" do
+    before { builder.path("/fizz/buzz").clear_path }
+    subject { uri.path }
+    it { is_expected.to eql "/" }
+  end
+
   describe "#trailing_slash" do
     before { builder.path(*path).trailing_slash }
     subject { uri.path }
@@ -100,8 +106,8 @@ RSpec.describe URI::Builder::DSL do
     end
   end
 
-  describe "#remove_trailing_slash" do
-    before { builder.path(*path).remove_trailing_slash }
+  describe "#clear_trailing_slash" do
+    before { builder.path(*path).clear_trailing_slash }
     subject { uri.path }
     context "/fizz/buzz" do
       let(:path) { "/fizz/buzz" }
@@ -138,10 +144,22 @@ RSpec.describe URI::Builder::DSL do
     end
   end
 
+  describe "#clear_query" do
+    before { builder.query(fizz: "buzz").clear_query }
+    subject { uri.query }
+    it { is_expected.to be_nil }
+  end
+
   describe "#fragment" do
     before { builder.fragment("duper") }
     subject { uri.fragment }
     it { is_expected.to eql "duper" }
+  end
+
+  describe "#clear_fragment" do
+    before { builder.fragment("duper").clear_fragment }
+    subject { uri.fragment }
+    it { is_expected.to be_nil }
   end
 
   describe "#port" do

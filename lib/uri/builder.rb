@@ -14,10 +14,14 @@ module URI
         @uri = uri.clone
       end
 
-      [:host, :query, :fragment, :port].each do |property|
+      [:host, :fragment, :port].each do |property|
         define_method property do |value|
           wrap property, value
         end
+      end
+
+      def clear_fragment
+        wrap :fragment, nil
       end
 
       def scheme(value)
@@ -48,16 +52,24 @@ module URI
         wrap :query, value
       end
 
+      def clear_query
+        wrap :query, nil
+      end
+
       def path(*segments)
         # Make sure there's a leading / if a non leading / is given.
         wrap :path, ::File.join(*segments.compact.map(&:to_s).prepend("/"))
+      end
+
+      def clear_path
+        path "/"
       end
 
       def trailing_slash
         wrap :path, @uri.path + "/" unless @uri.path.end_with?("/")
       end
 
-      def remove_trailing_slash
+      def clear_trailing_slash
         wrap :path, @uri.path.chomp("/") if @uri.path.end_with?("/") and @uri.path != "/"
       end
 
