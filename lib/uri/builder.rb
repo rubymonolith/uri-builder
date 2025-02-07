@@ -90,6 +90,7 @@ module URI
       def clear_path
         path "/"
       end
+      alias :root :clear_path
 
       def trailing_slash
         wrap :path, Path.new(@uri.path).trailing_slash(true).to_s
