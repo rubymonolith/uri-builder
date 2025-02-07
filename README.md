@@ -39,20 +39,26 @@ uri
 Paths may be traversed with various methods:
 
 ```ruby
-URI.build("https://www.example.com/api/v1") { it.join("books/search").query search: "great books" } # => "https://www.example.com/api/v1/books/search?search=great+books"
+# initialize base URL
+uri = URI.build("https://www.example.com/api/v1")
 
-URI.build("https://www.example.com/api/v1") { it.parent.join("v2/articles/search").query search: "great books" }.uri # => #<URI::HTTPS https://www.example.com/api/v2/articles/search?search=great+books>
+uri.join("books/search").query(search: "great books").uri
+# => #<URI::HTTPS https://www.example.com/api/v1/books/search?search=great+books>
 
-URI.build("https://www.example.com/api/v1") { it.root.join("about").uri # => #<URI::HTTPS https://www.example.com/about>
+uri.parent.join("v2/articles/search").query(search: "great books").uri
+# => #<URI::HTTPS https://www.example.com/api/v2/articles/search?search=great+books>
+
+uri.root.join("about").uri
+# => #<URI::HTTPS https://www.example.com/about>
 ```
 
 Compare that to:
 
 ```ruby
-uri = URI("https://www.example.com/api/v1")
-uri.path = uri.path + "/books/search"
-uri.query = URI.encode_www_form(search: "great books")
-uri
+URI("https://www.example.com/api/v1").tap do |uri|
+  uri.path = uri.path + "/books/search"
+  uri.query = URI.encode_www_form(search: "great books")
+end
 ```
 
 Each chain creates a duplicate of the original URL, so you can transform away without worrying about thrashing the original URL object.
