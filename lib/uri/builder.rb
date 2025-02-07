@@ -19,6 +19,10 @@ module URI
         self.class.new(*@segments, *segments)
       end
 
+      def parent
+        self.class.new(*@segments[0...-1])
+      end
+
       def to_s
         File.join("/", *@segments.map(&:to_s).tap { _1.append "/" if @trailing_slash })
       end
@@ -97,6 +101,10 @@ module URI
 
       def join(...)
         wrap :path, Path.new(@uri.path).join(...).to_s
+      end
+
+      def parent(...)
+        wrap :path, Path.new(@uri.path).parent(...).to_s
       end
 
       def to_s
