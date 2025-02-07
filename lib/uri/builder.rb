@@ -15,6 +15,10 @@ module URI
         @segments = segments.compact.flat_map { _1.to_s.split("/") }
       end
 
+      def join(*segments)
+        self.class.new(*@segments, *segments)
+      end
+
       def to_s
         File.join("/", *@segments.map(&:to_s).tap { _1.append "/" if @trailing_slash })
       end
@@ -89,6 +93,10 @@ module URI
 
       def clear_trailing_slash
         wrap :path, Path.new(@uri.path).trailing_slash(false).to_s
+      end
+
+      def join(...)
+        wrap :path, Path.new(@uri.path).join(...).to_s
       end
 
       def to_s

@@ -89,6 +89,12 @@ RSpec.describe URI::Builder::DSL do
     it { is_expected.to eql "/" }
   end
 
+  describe "#join" do
+    before { builder.path("/fizz/buzz").join("/foo/bar") }
+    subject { uri.path }
+    it { is_expected.to eql "/fizz/buzz/foo/bar" }
+  end
+
   describe "#trailing_slash" do
     before { builder.path(*path).trailing_slash }
     subject { uri.path }
