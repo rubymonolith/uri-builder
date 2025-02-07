@@ -9,7 +9,7 @@ URI.build("https://www.example.com/api/v1").path("/api/v2").query(search: "great
 Or if you prefer a block format that automatically converts back to an URI object after the transformation.
 
 ```ruby
-URI.build("https://www.example.com/api/v1") { _1.path("/api/v2").query search: "great books" }
+URI.build("https://www.example.com/api/v1") { it.path("/api/v2").query search: "great books" }
 ```
 
 Compare that to:
@@ -33,6 +33,25 @@ Compare that to:
 uri = URI ENV.fetch("API_URL")
 uri.path = "/people/search"
 uri.query = URI.encode_www_form(first_name: "Brad")
+uri
+```
+
+Paths may be traversed with various methods:
+
+```ruby
+URI.build("https://www.example.com/api/v1") { it.join("books/search").query search: "great books" } # => "https://www.example.com/api/v1/books/search?search=great+books"
+
+URI.build("https://www.example.com/api/v1") { it.parent.join("v2/articles/search").query search: "great books" }.uri # => #<URI::HTTPS https://www.example.com/api/v2/articles/search?search=great+books>
+
+URI.build("https://www.example.com/api/v1") { it.root.join("about").uri # => #<URI::HTTPS https://www.example.com/about>
+```
+
+Compare that to:
+
+```ruby
+uri = URI("https://www.example.com/api/v1")
+uri.path = uri.path + "/books/search"
+uri.query = URI.encode_www_form(search: "great books")
 uri
 ```
 
