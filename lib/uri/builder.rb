@@ -7,6 +7,24 @@ module URI
   module Builder
     class Error < StandardError; end
 
+    class Path
+      File = ::File
+
+      def initialize(*segments)
+        @trailing_slash = segments.last.to_s.end_with?("/")
+        @segments = segments.compact.flat_map { _1.to_s.split("/") }
+      end
+
+      def to_s
+        File.join("/", *@segments.map(&:to_s).tap { _1.append "/" if @trailing_slash })
+      end
+
+      def trailing_slash(value = true)
+        @trailing_slash = value
+        self
+      end
+    end
+
     class DSL
       attr_reader :uri
 
@@ -58,7 +76,7 @@ module URI
 
       def path(*segments)
         # Make sure there's a leading / if a non leading / is given.
-        wrap :path, ::File.join(*segments.compact.map(&:to_s).prepend("/"))
+        wrap :path, Path.new(*segments).to_s
       end
 
       def clear_path
@@ -66,11 +84,11 @@ module URI
       end
 
       def trailing_slash
-        wrap :path, @uri.path + "/" unless @uri.path.end_with?("/")
+        wrap :path, Path.new(@uri.path).trailing_slash(true).to_s
       end
 
       def clear_trailing_slash
-        wrap :path, @uri.path.chomp("/") if @uri.path.end_with?("/") and @uri.path != "/"
+        wrap :path, Path.new(@uri.path).trailing_slash(false).to_s
       end
 
       def to_s
