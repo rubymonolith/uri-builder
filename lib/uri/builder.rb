@@ -18,7 +18,7 @@ module URI
       end
 
       def join(*segments)
-        self.class.new(*@segments, *segments)
+        self.class.new(*@segments, *segments, trailing: @trailing)
       end
 
       def parent
@@ -100,12 +100,15 @@ module URI
       end
 
       def path(*segments)
-        # Make sure there's a leading / if a non leading / is given.
-        wrap :path, Path.parse(*segments).to_s
+        if segments.empty?
+          Path.parse(@uri.path)
+        else
+          wrap :path, Path.parse(*segments).to_s
+        end
       end
 
       def clear_path
-        path "/"
+        path Path::SLASH
       end
       alias :root :clear_path
 

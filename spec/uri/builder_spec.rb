@@ -53,33 +53,44 @@ RSpec.describe URI::Builder::DSL do
   end
 
   describe "#path" do
-    let(:path) { "/fizz/buzz" }
-    before { builder.path(*path) }
-    subject { uri.path }
-    it { is_expected.to eql "/fizz/buzz" }
-    context "without leading /" do
-      let(:path) { "fizz/buzz" }
+    context "with arguments" do
+      let(:path) { "/fizz/buzz" }
+      before { builder.path(*path) }
+      subject { uri.path }
       it { is_expected.to eql "/fizz/buzz" }
+      context "without leading /" do
+        let(:path) { "fizz/buzz" }
+        it { is_expected.to eql "/fizz/buzz" }
+      end
+      context "with trailing /" do
+        let(:path) { "fizz/buzz/" }
+        it { is_expected.to eql "/fizz/buzz/" }
+      end
+      context "blank" do
+        let(:path) { "" }
+        it { is_expected.to eql "/" }
+      end
+      context "nil" do
+        before { builder.path(nil) }
+        it { is_expected.to eql "/" }
+      end
+      context "23" do
+        let(:path) { 23 }
+        it { is_expected.to eql "/23" }
+      end
+      context "[nil, 23, '', :dog]" do
+        let(:path) { [ nil, 23, '', :dog ] }
+        it { is_expected.to eql "/23/dog" }
+      end
     end
-    context "with trailing /" do
-      let(:path) { "fizz/buzz/" }
-      it { is_expected.to eql "/fizz/buzz/" }
-    end
-    context "blank" do
-      let(:path) { "" }
-      it { is_expected.to eql "/" }
-    end
-    context "nil" do
-      let(:path) { nil }
-      it { is_expected.to eql "/" }
-    end
-    context "23" do
-      let(:path) { 23 }
-      it { is_expected.to eql "/23" }
-    end
-    context "[nil, 23, '', :dog]" do
-      let(:path) { [ nil, 23, '', :dog ] }
-      it { is_expected.to eql "/23/dog" }
+    context "without arguments" do
+      let(:path) { builder.path }
+      subject { path }
+      it { is_expected.to be_a URI::Builder::Path }
+      pending "#uri" do
+        subject { path.uri }
+        it { is_expected.to eql uri }
+      end
     end
   end
 
@@ -105,9 +116,7 @@ RSpec.describe URI::Builder::DSL do
     context "/foo/bar" do
       before { builder.path("/foo/bar").parent }
       subject { uri.path }
-      it {
-        # binding.irb
-        is_expected.to eql "/foo" }
+      it { is_expected.to eql "/foo" }
     end
     context "/foo" do
       before { builder.path("/foo").parent }
