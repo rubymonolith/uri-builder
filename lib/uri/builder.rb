@@ -10,9 +10,11 @@ module URI
     class Path
       File = ::File
 
-      def initialize(*segments)
-        @trailing_slash = segments.last.to_s.end_with?("/")
-        @segments = segments.compact.flat_map { _1.to_s.split("/") }
+      SLASH = "/".freeze
+
+      def initialize(*segments, trailing: nil)
+        @trailing = trailing
+        @segments = segments
       end
 
       def join(*segments)
@@ -20,16 +22,31 @@ module URI
       end
 
       def parent
-        self.class.new(*@segments[0...-1])
+        @parent ||= self.class.new(*@segments[0...-1])
+      end
+
+      def root?
+        @segments.empty?
       end
 
       def to_s
-        File.join("/", *@segments.map(&:to_s).tap { _1.append "/" if @trailing_slash })
+        File.join(SLASH, *@segments.map(&:to_s)).tap do |path|
+          path.concat @trailing if @trailing and not root?
+        end
       end
 
-      def trailing_slash(value = true)
-        @trailing_slash = value
+      def trailing(value = nil, slash: true)
+        @trailing = value || slash ? SLASH : nil
         self
+      end
+
+      def self.parse(*segments)
+        trailing = SLASH if segments.last.to_s.end_with?(SLASH)
+        new(*flatten(segments), trailing:)
+      end
+
+      def self.flatten(segments)
+        segments.compact.flat_map { _1.to_s.split(SLASH).reject(&:empty?) }
       end
     end
 
@@ -84,7 +101,7 @@ module URI
 
       def path(*segments)
         # Make sure there's a leading / if a non leading / is given.
-        wrap :path, Path.new(*segments).to_s
+        wrap :path, Path.parse(*segments).to_s
       end
 
       def clear_path
@@ -93,19 +110,19 @@ module URI
       alias :root :clear_path
 
       def trailing_slash
-        wrap :path, Path.new(@uri.path).trailing_slash(true).to_s
+        wrap :path, Path.parse(@uri.path).trailing(slash: true).to_s
       end
 
       def clear_trailing_slash
-        wrap :path, Path.new(@uri.path).trailing_slash(false).to_s
+        wrap :path, Path.parse(@uri.path).trailing(slash: false).to_s
       end
 
       def join(...)
-        wrap :path, Path.new(@uri.path).join(...).to_s
+        wrap :path, Path.parse(@uri.path).join(...).to_s
       end
 
       def parent(...)
-        wrap :path, Path.new(@uri.path).parent(...).to_s
+        wrap :path, Path.parse(@uri.path).parent(...).to_s
       end
 
       def to_s

@@ -102,13 +102,15 @@ RSpec.describe URI::Builder::DSL do
   end
 
   describe "#parent" do
-    context "/fizz/buzz" do
-      before { builder.path("/fizz/buzz").parent }
+    context "/foo/bar" do
+      before { builder.path("/foo/bar").parent }
       subject { uri.path }
-      it { is_expected.to eql "/fizz" }
+      it {
+        # binding.irb
+        is_expected.to eql "/foo" }
     end
-    context "/fizz" do
-      before { builder.path("/fizz").parent }
+    context "/foo" do
+      before { builder.path("/foo").parent }
       subject { uri.path }
       it { is_expected.to eql "/" }
     end
@@ -123,13 +125,13 @@ RSpec.describe URI::Builder::DSL do
   describe "#trailing_slash" do
     before { builder.path(*path).trailing_slash }
     subject { uri.path }
-    context "/fizz/buzz" do
-      let(:path) { "/fizz/buzz" }
-      it { is_expected.to eql "/fizz/buzz/" }
+    context "/foo/bar" do
+      let(:path) { "/foo/bar" }
+      it { is_expected.to eql "/foo/bar/" }
     end
-    context "/fizz/buzz/" do
-      let(:path) { "/fizz/buzz/" }
-      it { is_expected.to eql "/fizz/buzz/" }
+    context "/foo/bar/" do
+      let(:path) { "/foo/bar/" }
+      it { is_expected.to eql "/foo/bar/" }
     end
     context "/" do
       let(:path) { "/" }
