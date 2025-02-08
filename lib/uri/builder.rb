@@ -99,6 +99,14 @@ module URI
         wrap :query, nil
       end
 
+      def segments
+        @uri.path.split("/").reject(&:empty?)
+      end
+
+      def join(*segments)
+        path(*self.segments, *segments)
+      end
+
       def path(*segments)
         if segments.empty?
           Path.parse(@uri.path)
@@ -107,10 +115,15 @@ module URI
         end
       end
 
-      def clear_path
+      def root
         path Path::SLASH
       end
-      alias :root :clear_path
+      alias :clear_path :root
+
+      def trailing(value = nil)
+        @trailing = value
+        self
+      end
 
       def trailing_slash
         wrap :path, Path.parse(@uri.path).trailing(slash: true).to_s
@@ -120,12 +133,14 @@ module URI
         wrap :path, Path.parse(@uri.path).trailing(slash: false).to_s
       end
 
-      def join(...)
-        wrap :path, Path.parse(@uri.path).join(...).to_s
-      end
+      def parent
+        *parents, _ = segments
 
-      def parent(...)
-        wrap :path, Path.parse(@uri.path).parent(...).to_s
+        if parents.any?
+          path(*parents)
+        else
+          root
+        end
       end
 
       def to_s
