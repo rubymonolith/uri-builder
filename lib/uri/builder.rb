@@ -7,49 +7,6 @@ module URI
   module Builder
     class Error < StandardError; end
 
-    class Path
-      File = ::File
-
-      SLASH = "/".freeze
-
-      def initialize(*segments, trailing: nil)
-        @trailing = trailing
-        @segments = segments
-      end
-
-      def join(*segments)
-        self.class.new(*@segments, *segments, trailing: @trailing)
-      end
-
-      def parent
-        @parent ||= self.class.new(*@segments[0...-1])
-      end
-
-      def root?
-        @segments.empty?
-      end
-
-      def to_s
-        File.join(SLASH, *@segments.map(&:to_s)).tap do |path|
-          path.concat @trailing if @trailing and not root?
-        end
-      end
-
-      def trailing(value = nil, slash: true)
-        @trailing = value || slash ? SLASH : nil
-        self
-      end
-
-      def self.parse(*segments)
-        trailing = SLASH if segments.last.to_s.end_with?(SLASH)
-        new(*flatten(segments), trailing:)
-      end
-
-      def self.flatten(segments)
-        segments.compact.flat_map { _1.to_s.split(SLASH).reject(&:empty?) }
-      end
-    end
-
     class DSL
       attr_reader :uri
 
@@ -59,12 +16,12 @@ module URI
 
       [:host, :fragment, :port].each do |property|
         define_method property do |value|
-          wrap property, value
+          update property, value
         end
       end
 
       def clear_fragment
-        wrap :fragment, nil
+        update :fragment, nil
       end
 
       def scheme(value)
@@ -92,11 +49,11 @@ module URI
           value
         end
 
-        wrap :query, value
+        update :query, value
       end
 
       def clear_query
-        wrap :query, nil
+        update :query, nil
       end
 
       def segments
@@ -108,39 +65,29 @@ module URI
       end
 
       def path(*segments)
-        if segments.empty?
-          Path.parse(@uri.path)
-        else
-          wrap :path, Path.parse(*segments).to_s
-        end
+        update :path, ::File.join("/", *segments.compact.map(&:to_s))
       end
 
       def root
-        path Path::SLASH
+        path "/"
       end
       alias :clear_path :root
 
-      def trailing(value = nil)
-        @trailing = value
-        self
-      end
-
       def trailing_slash
-        wrap :path, Path.parse(@uri.path).trailing(slash: true).to_s
+        update :path, @uri.path.concat("/") unless @uri.path.end_with?("/")
       end
 
       def clear_trailing_slash
-        wrap :path, Path.parse(@uri.path).trailing(slash: false).to_s
+        update :path, @uri.path.chomp("/") if @uri.path.end_with?("/") and not root?
+      end
+
+      def root?
+        @uri.path == "/"
       end
 
       def parent
         *parents, _ = segments
-
-        if parents.any?
-          path(*parents)
-        else
-          root
-        end
+        root? ? root : path(*parents)
       end
 
       def to_s
@@ -152,7 +99,7 @@ module URI
       end
 
       private
-        def wrap(property, value)
+        def update(property, value)
           @uri.send "#{property}=", value
           self
         end
